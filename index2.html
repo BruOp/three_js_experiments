@@ -10,8 +10,9 @@
   </body>
 
   <script src="js/three.min.js"></script>
-  // <script src="js/OrbitControls.js"></script>
-  // <script src="js/SubdivisionModifier.js"></script>
+  <script src="js/OrbitControls.js"></script>
+  <script src="js/SubdivisionModifier.js"></script>
+  <script src="js/analyser.js"></script>
   <script type="x-shader/x-fragment" id="fragmentShader">
     uniform float time;
     uniform sampler2D tMatCap;
@@ -184,7 +185,6 @@
         // move the position along the normal and transform it
         vec3 newPosition = position + normal * displacement;
         // vec3 newPosition = position + normal * (textureDisplacement.xyz * 10.0);
-        // gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
 
         vec4 p = vec4( newPosition, 1. ) + textureDisplacement;
 

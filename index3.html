@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.js webgl - shader [Monjori]</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  </head>
+  <body>
+
+    <div id="container"></div>
+
+    <script src="js/three.min.js"></script>
+    <script src="js/analyser.js"></script>
+
+    <script id="vertexShader" type="x-shader/x-vertex">
+
+      void main() {
+
+        gl_Position = vec4( position, 1.0 );
+
+      }
+
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+
+      uniform vec2 resolution;
+      uniform float time;
+      uniform sampler2D iChannel0;
+
+      void main() {
+
+        vec2 coord = gl_FragCoord.xy / resolution.xy;
+        
+        vec4 originalColor = texture2D(iChannel0, coord);
+
+        gl_FragColor = vec4(originalColor, 1);
+
+      }
+
+    </script>
+    <script src="js/main2.js"></script>
+  </body>
+</html>

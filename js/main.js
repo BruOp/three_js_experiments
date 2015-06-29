@@ -12,7 +12,8 @@ window.addEventListener( 'load', function() {
   // grab the container from the DOM
   container = document.getElementById( "container" );
 
-  
+  var soundAnalyser = SoundAnalyser();
+  soundAnalyser.connectTrack('music/Atoms%20For%20Peace%20-%20Amok.mp3')
   // create a scene
   scene = new THREE.Scene();
 
@@ -69,9 +70,9 @@ window.addEventListener( 'load', function() {
 
   // create a sphere and assign the material
   mesh = new THREE.Mesh( 
-    // new THREE.IcosahedronGeometry( 20, 4 ), 
+    new THREE.IcosahedronGeometry( 20, 4 ), 
     // new THREE.TorusKnotGeometry(15, 4, 248, 16  ),
-    smooth,
+    // smooth,
     material 
   );
   scene.add( mesh );
