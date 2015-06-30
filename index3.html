@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.js webgl - shader [Monjori]</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  </head>
+  <body>
+
+    <div id="container"></div>
+
+    <script src="js/three.min.js"></script>
+    <script src="js/analyser.js"></script>
+
+    <script id="vertexShader" type="x-shader/x-vertex">
+
+      void main() {
+
+        gl_Position = vec4( position, 1.0 );
+
+      }
+
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+
+      uniform vec2 resolution;
+      uniform float time;
+      uniform sampler2D iChannel0;
+
+      void main() {
+
+         // // create pixel coordinates
+          vec2 uv = gl_FragCoord.xy / resolution.xy;
+
+          // first texture row is frequency data
+          float fft  = texture2D( iChannel0, vec2(uv.x,0.25) ).x; 
+          
+            // second texture row is the sound wave
+          float wave = texture2D( iChannel0, vec2(uv.x,0.75) ).x;
+          
+          // convert frequency to colors
+          vec3 col = vec3( fft, 4.0*fft*(1.0-fft), 1.0-fft ) * fft;
+
+            // add wave form on top 
+          col += 1.0 -  smoothstep( 0.0, 0.15, abs(wave - uv.y) );
+          
+          // output final color
+          gl_FragColor = vec4(col,1.0);
+           
+        // vec4 originalColor = texture2D(iChannel0, uv);
+
+        // gl_FragColor = vec4(originalColor.xyz, 1);
+      }
+
+    </script>
+    <script src="js/main2.js"></script>
+  </body>
+</html>
