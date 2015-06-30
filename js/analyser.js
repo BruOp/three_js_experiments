@@ -1,4 +1,5 @@
-
+var oldFreqData;
+var length = 512;
 // Based on http://www.airtightinteractive.com/demos/js/uberviz/audioanalysis/js/AudioHandler.js
 var SoundAnalyser = function() {
   // 'use strict'
@@ -30,8 +31,8 @@ var SoundAnalyser = function() {
     audioContext = new window.AudioContext();
 
     analyser = audioContext.createAnalyser();
-    analyser.smoothingTimeConstant = 1.0;//0.8; // 0<->1 // 0 is no time smoothing
-    analyser.fftSize = 1024;
+    analyser.smoothingTimeConstant = 0.5;//0.8; // 0<->1 // 0 is no time smoothing
+    analyser.fftSize = length * 2;
     
     volumeNode = audioContext.createGain();
     volumeGainNode = audioContext.createGain();
@@ -46,6 +47,8 @@ var SoundAnalyser = function() {
 
     freqByteData = new Uint8Array(soundAnalyser.binCount); 
     timeByteData = new Uint8Array(soundAnalyser.binCount);
+
+    oldFreqData = soundAnalyser.getFreqData();
 
   }
 
@@ -151,20 +154,39 @@ var SoundAnalyser = function() {
     //   freqData[i] = freqData[i] / 512;
     //   timeData[i] = (timeData[i] - 128) / 128;
     // }
-    var dataColor = new Uint8Array(3 * freqData.length + 3 * timeData.length);
-    for (var i = 0; i < freqData.length; i++) {
-      var freqDataPoint = timeData[i]
-      dataColor[ i * 3 ]     = freqDataPoint;
-      dataColor[ i * 3 + 1 ] = freqDataPoint;
-      dataColor[ i * 3 + 2 ] = freqDataPoint;
+
+    var dataColor = new Uint8Array(6 * freqData.length + 6 * timeData.length);
+    for (var i = 0; i < length; i++) {
+      var timeDataPoint = freqData[i]
+      oldFreqData[i] = Math.max(oldFreqData[i]-5, timeDataPoint);
+      dataColor[ i * 3 ]     = oldFreqData[length - i];
+      dataColor[ i * 3 + 1 ] = dataColor[ i * 3 ];  
+      dataColor[ i * 3 + 2 ] = dataColor[ i * 3 ];
     }
-    for (var j = freqData.length; j < freqData.length + timeData.length; j++) {
-      var timeDataPoint = freqData[j-512]
-      dataColor[ j * 3 ]     = timeDataPoint;
-      dataColor[ j * 3 + 1 ] = timeDataPoint;
-      dataColor[ j * 3 + 2 ] = timeDataPoint;
+    for (var j = length; j < length * 2; j++) {
+      dataColor[ j * 3 ]     = oldFreqData[j - length];
+      dataColor[ j * 3 + 1 ] = dataColor[ j * 3 ];
+      dataColor[ j * 3 + 2 ] = dataColor[ j * 3 ];
     }
-    return dataColor;
+    for (var i = length * 2; i < length * 3; i++) {
+      dataColor[ i * 3 ]     = oldFreqData[3 * length - i];
+      dataColor[ i * 3 + 1 ] = dataColor[ i * 3 ];  
+      dataColor[ i * 3 + 2 ] = dataColor[ i * 3 ];
+    }
+    for (var j = length * 3; j < length * 4; j++) {
+      dataColor[ j * 3 ]     = oldFreqData[j - 3*length];
+      dataColor[ j * 3 + 1 ] = dataColor[ j * 3 ];
+      dataColor[ j * 3 + 2 ] = dataColor[ j * 3 ];
+    }
+    // dataColor[0] = dataColor[length -1] = 
+    // dataColor[length] = dataColor[2 * length - 1] = 
+    // dataColor[2 * length] = dataColor[3 * length - 1] =
+    // dataColor[3 * length] = dataColor[4 * length - 1] = 0
+    var newDataColor = new Uint8Array(dataColor.length)
+    for (var m = 3; m < dataColor.length - 3; m++) {
+      newDataColor[m] = Math.floor(dataColor[m-3] + dataColor[m-2] + dataColor[m-1] + dataColor[m] + dataColor[m+1] + dataColor[m+2] + dataColor[m+3])/7
+    }
+    return newDataColor;
   }
 
   initContext();

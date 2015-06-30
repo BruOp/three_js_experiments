@@ -44,7 +44,7 @@
     }
 
     colorRampTexture = new THREE.DataTexture( dataColor, rwidth, rheight, THREE.RGBFormat );
-    texture = new THREE.DataTexture(soundAnalyser.getData(), 512, 2, THREE.RGBFormat);
+    texture = new THREE.DataTexture(soundAnalyser.getData(), 1024, 2, THREE.RGBFormat);
     
     // texture = new THREE.DataTexture(test, 512, 2, THREE.LuminanceFormat, THREE.UnsignedIntType);
     // texture = THREE.ImageUtils.loadTexture( 'test.jpg' );
@@ -64,7 +64,6 @@
     material.needsUpdate = true;
     material.uniforms.iChannel0.value.needsUpdate = true;
     mesh = new THREE.Mesh( geometry, material );
-    console.log(mesh.material.uniforms.iChannel0)
     scene.add( mesh );
 
     renderer = new THREE.WebGLRenderer();
@@ -95,7 +94,7 @@
 
     counter++;
     if (counter % 120 === 0) {
-      console.log(mesh.material.uniforms.iChannel0.value.image.data)
+      console.log(mesh.material.uniforms.iChannel0.value.image.data[2400])
     }
 
     render();

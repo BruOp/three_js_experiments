@@ -30,12 +30,12 @@ window.addEventListener( 'load', function() {
 
   scene.add( camera );
 
-  texture = new THREE.DataTexture(soundAnalyser.getData(), 512, 2, THREE.RGBFormat);
+  texture = new THREE.DataTexture(soundAnalyser.getData(), 1024, 2, THREE.RGBFormat);
 
   var uniforms = { 
               tMatCap: { 
                   type: 't', 
-                  value: THREE.ImageUtils.loadTexture( 'matcap4.jpg' ) 
+                  value: THREE.ImageUtils.loadTexture( 'matcap2.jpg' ) 
               },
               iChannel0: { 
                   type: 't', 
@@ -57,14 +57,15 @@ window.addEventListener( 'load', function() {
       
   } );
 
-  material.uniforms.tMatCap.value.wrapS = 
-  material.uniforms.tMatCap.value.wrapT = 
-  THREE.ClampToEdgeWrapping;
+  material.uniforms.iChannel0.value.minFilter = THREE.NearestFilter;
+  material.uniforms.iChannel0.value.wrapS = 
+  material.uniforms.iChannel0.value.wrapT = 
+  THREE.MirroredRepeatWrapping;
 
   material.needsUpdate = true;
   material.uniforms.iChannel0.value.needsUpdate = true;
 
-  var modifier = new THREE.SubdivisionModifier( 4 );
+  var modifier = new THREE.SubdivisionModifier( 3 );
 
   var smooth = new THREE.BoxGeometry(20, 20, 20);
 
@@ -77,8 +78,10 @@ window.addEventListener( 'load', function() {
 
   // create a sphere and assign the material
   mesh = new THREE.Mesh( 
-    new THREE.IcosahedronGeometry( 20, 4 ), 
-    // new THREE.TorusKnotGeometry(15, 4, 248, 16  ),
+    // new THREE.IcosahedronGeometry( 20, 4 ), 
+    new THREE.TorusKnotGeometry(20, 4, 248, 16, 2, 6  ),
+    // new THREE.PlaneGeometry(20, 20, 512, 32),
+    // new THREE.CylinderGeometry( 10, 10, 40, 32, 32 ),
     // smooth,
     material 
   );
