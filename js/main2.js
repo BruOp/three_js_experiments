@@ -20,9 +20,7 @@
 
     soundAnalyser = SoundAnalyser();
     soundAnalyser.connectTrack('music/Atoms%20For%20Peace%20-%20Amok.mp3');
-    // freqData = soundAnalyser.getFreqData();
-    // timeData = soundAnalyser.getTimeData();
-    // console.log(freqData.length);
+    
 
     camera = new THREE.Camera();
     camera.position.z = 1;
@@ -31,14 +29,16 @@
 
     var geometry = new THREE.PlaneBufferGeometry( 2, 2 );
 
-    // texture = new THREE.DataTexture(freqData, 512, 1, THREE.LuminanceFormat)
+    texture = new THREE.DataTexture(soundAnalyser.getData(), 512, 2, THREE.AlphaFormat, THREE.FloatType);
 
     uniforms = {
       time: { type: "f", value: 1.0 },
       resolution: { type: "v2", value: new THREE.Vector2() },
       iChannel0: { type: 't', value: THREE.ImageUtils.loadTexture( 'simplex.jpg' ) }
-      // iChannel0: { type: 't', value: texture}
+      // iChannel0: { type: 't', value: texture }
     };
+
+    console.log(uniforms.iChannel0.value )
 
     material = new THREE.ShaderMaterial( {
 
@@ -75,11 +75,12 @@
 
     requestAnimationFrame( animate );
 
-    // counter++;
-    // if (counter % 30) {
-    // }
-    // 
-    // texture = new THREE.DataTexture(freqData, 512, 1, THREE.LuminanceFormat);
+    counter++;
+    if (counter % 120) {
+      // console.log(texture)
+    }
+    
+    // texture = new THREE.DataTexture(soundAnalyser.getData(), 512, 2, THREE.LuminanceFormat, THREE.FloatType);
     // material.uniforms.iChannel0.value = texture;
     render();
 

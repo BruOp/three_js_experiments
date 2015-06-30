@@ -129,16 +129,30 @@ var SoundAnalyser = function() {
   }
 
   soundAnalyser.getFreqData = function() {
-    var dataArray = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(dataArray);
+    var dataArray = new Float32Array(analyser.frequencyBinCount);
+    analyser.getFloatFrequencyData(dataArray);
     return dataArray;
   }
 
 
   soundAnalyser.getTimeData = function() {
-    var dataArray = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteTimeDomainData(dataArray);
+    var dataArray = new Float32Array(analyser.frequencyBinCount);
+    analyser.getFloatTimeDomainData(dataArray);
     return dataArray;
+  }
+
+  soundAnalyser.getData = function() {
+    freqData = soundAnalyser.getFreqData();
+    timeData = soundAnalyser.getTimeData();
+    for (var i = 0; i < 512; i++) {
+      freqData[i] = freqData[i] / 512;
+      timeData[i] = (timeData[i] - 128) / 128;
+    }
+    
+    var allData = new Float32Array(freqData.length + timeData.length);
+    allData.set(freqData);
+    allData.set(timeData, freqData.length);
+    return allData;
   }
 
   initContext();
