@@ -1,5 +1,7 @@
+
 // Based on http://www.airtightinteractive.com/demos/js/uberviz/audioanalysis/js/AudioHandler.js
 var SoundAnalyser = function() {
+  // 'use strict'
 
   var that = this, soundAnalyser = {};
 
@@ -12,7 +14,7 @@ var SoundAnalyser = function() {
 
 
   var isPlaying = false, isUsingMic = false, isMicCreated = false;
-  var audioContext, audioElement, analyser, microphone, volumeNode;
+  var audioContext, audioElement, analyser, microphone, volumeNode, volumeGainNode;
 
   var freqByteData; // bars - bar data is from 0 - 256 in 512 bins. no sound is 0;
   var timeByteData; // waveform - waveform data is from 0-256 for 512 bins. no sound is 128.
@@ -28,7 +30,7 @@ var SoundAnalyser = function() {
     audioContext = new window.AudioContext();
 
     analyser = audioContext.createAnalyser();
-    analyser.smoothingTimeConstant = 0;//0.8; // 0<->1 // 0 is no time smoothing
+    analyser.smoothingTimeConstant = 1.0;//0.8; // 0<->1 // 0 is no time smoothing
     analyser.fftSize = 1024;
     
     volumeNode = audioContext.createGain();
@@ -44,6 +46,7 @@ var SoundAnalyser = function() {
 
     freqByteData = new Uint8Array(soundAnalyser.binCount); 
     timeByteData = new Uint8Array(soundAnalyser.binCount);
+
   }
 
   soundAnalyser.setVolume = function(value) {
@@ -142,24 +145,24 @@ var SoundAnalyser = function() {
   }
 
   soundAnalyser.getData = function() {
-    freqData = soundAnalyser.getFreqData();
-    timeData = soundAnalyser.getTimeData();
+    var freqData = soundAnalyser.getFreqData();
+    var timeData = soundAnalyser.getTimeData();
     // for (var i = 0; i < 512; i++) {
     //   freqData[i] = freqData[i] / 512;
     //   timeData[i] = (timeData[i] - 128) / 128;
     // }
     var dataColor = new Uint8Array(3 * freqData.length + 3 * timeData.length);
-    for (var i = 0; i < 512; i++) {
-      var freqDataPoint = freqData[i]
+    for (var i = 0; i < freqData.length; i++) {
+      var freqDataPoint = timeData[i]
       dataColor[ i * 3 ]     = freqDataPoint;
       dataColor[ i * 3 + 1 ] = freqDataPoint;
       dataColor[ i * 3 + 2 ] = freqDataPoint;
     }
-    for (var i = 512; i < 1024; i++) {
-      var timeDataPoint = timeData[i]
-      dataColor[ i * 3 ]     = timeDataPoint;
-      dataColor[ i * 3 + 1 ] = timeDataPoint;
-      dataColor[ i * 3 + 2 ] = timeDataPoint;
+    for (var j = freqData.length; j < freqData.length + timeData.length; j++) {
+      var timeDataPoint = freqData[j-512]
+      dataColor[ j * 3 ]     = timeDataPoint;
+      dataColor[ j * 3 + 1 ] = timeDataPoint;
+      dataColor[ j * 3 + 2 ] = timeDataPoint;
     }
     return dataColor;
   }
