@@ -129,30 +129,39 @@ var SoundAnalyser = function() {
   }
 
   soundAnalyser.getFreqData = function() {
-    var dataArray = new Float32Array(analyser.frequencyBinCount);
-    analyser.getFloatFrequencyData(dataArray);
+    var dataArray = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(dataArray);
     return dataArray;
   }
 
 
   soundAnalyser.getTimeData = function() {
-    var dataArray = new Float32Array(analyser.frequencyBinCount);
-    analyser.getFloatTimeDomainData(dataArray);
+    var dataArray = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteTimeDomainData(dataArray);
     return dataArray;
   }
 
   soundAnalyser.getData = function() {
     freqData = soundAnalyser.getFreqData();
     timeData = soundAnalyser.getTimeData();
+    // for (var i = 0; i < 512; i++) {
+    //   freqData[i] = freqData[i] / 512;
+    //   timeData[i] = (timeData[i] - 128) / 128;
+    // }
+    var dataColor = new Uint8Array(3 * freqData.length + 3 * timeData.length);
     for (var i = 0; i < 512; i++) {
-      freqData[i] = freqData[i] / 512;
-      timeData[i] = (timeData[i] - 128) / 128;
+      var freqDataPoint = freqData[i]
+      dataColor[ i * 3 ]     = freqDataPoint;
+      dataColor[ i * 3 + 1 ] = freqDataPoint;
+      dataColor[ i * 3 + 2 ] = freqDataPoint;
     }
-    
-    var allData = new Float32Array(freqData.length + timeData.length);
-    allData.set(freqData);
-    allData.set(timeData, freqData.length);
-    return allData;
+    for (var i = 512; i < 1024; i++) {
+      var timeDataPoint = timeData[i]
+      dataColor[ i * 3 ]     = timeDataPoint;
+      dataColor[ i * 3 + 1 ] = timeDataPoint;
+      dataColor[ i * 3 + 2 ] = timeDataPoint;
+    }
+    return dataColor;
   }
 
   initContext();

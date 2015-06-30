@@ -1,7 +1,7 @@
 
   var container, stats;
 
-  var camera, scene, renderer, material, mesh;
+  var camera, scene, renderer, material, mesh, colorRampTexture;
 
   var uniforms;
 
@@ -29,26 +29,24 @@
 
     var geometry = new THREE.PlaneBufferGeometry( 2, 2 );
 
-    var rwidth = 256, rheight = 1, rsize = rwidth * rheight;
+    var rwidth = 512, rheight = 2, rsize = rwidth * rheight;
 
-    var tcolor = new THREE.Color( 0xffffff );
-
-    var dataColor = new Uint8Array( rsize * 3 );
+    var dataColor = new Uint8Array( rsize * 6 );
 
     for ( var i = 0; i < rsize; i ++ ) {
 
         var h = i / 255;
         
         dataColor[ i * 3 ]     = Math.floor( Math.sin(i * Math.PI / 180.) * 255 );
-        dataColor[ i * 3 + 1 ] = Math.floor( Math.sin(i * Math.PI / 180.) * 255 );
-        dataColor[ i * 3 + 2 ] = Math.floor( Math.sin(i * Math.PI / 180.) * 255 );
+        dataColor[ i * 3 + 1 ] = dataColor[ i * 3 ];
+        dataColor[ i * 3 + 2 ] = dataColor[ i * 3 ];
 
     }
 
     colorRampTexture = new THREE.DataTexture( dataColor, rwidth, rheight, THREE.RGBFormat );
-    colorRampTexture.needsUpdate = true;
-
-    texture = new THREE.DataTexture(soundAnalyser.getData(), 2, 512, THREE.AlphaFormat, THREE.FloatType);
+    colorRampTexture.needsUpdate = true
+    texture = new THREE.DataTexture(soundAnalyser.getData(), 512, 2, THREE.RGBFormat);
+    
     // texture = new THREE.DataTexture(test, 512, 2, THREE.LuminanceFormat, THREE.UnsignedIntType);
     // texture = THREE.ImageUtils.loadTexture( 'test.jpg' );
     uniforms = {
@@ -57,7 +55,7 @@
       iChannel0: { type: 't', value: colorRampTexture }
     };
 
-    console.log(texture.data)
+    console.log(colorRampTexture)
 
     material = new THREE.ShaderMaterial( {
 
@@ -96,11 +94,9 @@
 
     counter++;
     if (counter % 120) {
-      // console.log(texture)
+      console.log(mesh.material.uniforms.iChannel0.value.image.data)
     }
-    
-    // texture = new THREE.DataTexture(soundAnalyser.getData(), 2, 512, THREE.LuminanceFormat, THREE.FloatType);
-    // material.uniforms.iChannel0.value = texture;
+
     render();
 
 
@@ -109,6 +105,20 @@
   function render() {
 
     uniforms.time.value += 0.05;
+    var rwidth = 512, rheight = 2, rsize = rwidth * rheight;
+
+    var dataColor = new Uint8Array( rsize * 6 );
+
+    for ( var i = 0; i < rsize; i ++ ) {
+
+        dataColor[ i * 3 ]     = Math.floor( Math.random() * 255 );
+        dataColor[ i * 3 + 1 ] = dataColor[ i * 3 ];
+        dataColor[ i * 3 + 2 ] = dataColor[ i * 3 ];
+    }
+
+    // texture = new THREE.DataTexture(soundAnalyser.getData(), 512, 2, THREE.RGBFormat);
+    uniforms.iChannel0.value.image.data = dataColor;
+    
 
     renderer.render( scene, camera );
 
